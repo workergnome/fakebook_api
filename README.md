@@ -24,13 +24,22 @@ Unfriend is not confirming.
 
 ### install:
 
-    # install git
+    # install git + xcode command line tools
+    git
     # install homebrew
+    ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
     # install rvm
+    \curl -sSL https://get.rvm.io | bash -s stable
+
     brew install beanstalkd
     brew install redis
-    
+    sudo gem install bundle
+    git clone git@github.com:workergnome/fakebook_api.git
+    cd fakebook_api
+    bundle install
+
+
     # To create a self-signed cert:
     openssl req -new -newkey rsa:2048 -sha1 -days 365 -nodes -x509 -keyout server.key -out server.crt
-
-see <http://makandracards.com/makandra/15901-howto-create-a-self-signed-certificate> for more info
+see <http://makandracards.com/makandra/15903-using-thin-for-development-with-ssl> for more info--
+see <http://makandracards.com/makandra/15901-howto-create-a-self-signed-certificate> for more info-- 
