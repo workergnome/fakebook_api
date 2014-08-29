@@ -1,10 +1,11 @@
-/screenshots
 .sass-cache
 app/public/css/*
 !app/public/css/lib
 
 app/public/js/*
 !app/public/js/lib
-/logs
+/logs/*
+/screenshots/*
+!/*/.gitkeep
 .env
 .rvmrc
