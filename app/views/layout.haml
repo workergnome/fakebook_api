@@ -1,0 +1,25 @@
+!!!
+%html
+  %head
+    %title Fakebook API Monitoring System
+
+
+    %link{:rel => :stylesheet, :type => :"text/css", :href => "/css/lib/bootstrap.css"}
+    %link{:rel => :stylesheet, :type => :"text/css", :href => "/css/app.css"}
+
+  %body
+    .navbar.navbar-inverse.navbar-fixed-top
+      .container
+        .navbar-header
+          %a.navbar-brand{href: "/"} Fakebook API Monitoring System  
+    .container
+      .row
+        .col-md-12
+          =yield
+
+  %script{src: "/js/lib/jquery.js"}
+  %script{src: "/js/lib/handlebars.js"}
+  %script{src: "/js/lib/bootstrap.js"}
+  %script{src: "/js/templates.js"}
+  %script{src: "/js/app.js"}
+

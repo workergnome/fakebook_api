@@ -1,0 +1,19 @@
+%h2= ticket['ticket']
+
+%ul.well
+  %li 
+    %strong Status:
+    =  ( if ticket['status'] == 0 then "Processing" elsif ticket['status'] == 1 then "Successful" elsif ticket['status'] == -1 then "Failed" else "Unknown" end)
+  %li
+    %strong Method:
+    = ticket['method']
+  %li
+    %strong From:
+    = ticket['email']
+  %li 
+    %strong To:
+    = ticket['id']
+  - if ticket['message']
+    %li 
+      %strong Message:
+      = ticket['message']

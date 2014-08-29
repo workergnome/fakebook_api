@@ -1,0 +1,38 @@
+%h1 API Test
+.row
+  .col-md-12.well
+    %form.form-horizontal#api-test
+
+      .form-group.form-group-sm
+        %label.control-label.col-md-2{for: "email"} email:
+        .col-md-4
+          %input#email.form-control.required{type: "email", name: "email", placeholder: "Enter your email address"}
+      .form-group.form-group-sm
+        %label.control-label.col-md-2{for: "password"} Password:
+        .col-md-4
+          %input#password.form-control.required{type: "password", name: "password", placeholder: "Enter your facebook password"}
+        %span.help-block Don't do it.  This WILL hack your account.
+      .form-group.form-group-sm
+        %label.control-label.col-md-2{for: "friend"} Friend's ID:
+        .col-md-4
+          %input#friend.form-control.required{type: "text", name: "id", placeholder: "Enter Your friend's facebook acct."}
+      .form-group.form-group-sm
+        %label.control-label.col-md-2{for: "fb_action"} Desired Action:
+        .col-md-4
+          %select.form-control#fb_action
+            %option Poke
+            %option Post
+            %option Friend
+            %option Defriend
+            %option Block
+            %option Unblock
+      .form-group.form-group-sm#message_group
+        %label.control-label.col-md-2{for: "message"} Message:
+        .col-md-4
+          %input#message.form-control{type: "text", name: "message", placeholder: "Enter your message."}
+      .col-md-offset-2
+        %button#do_fb.btn.btn-danger{type: "submit"} Manipulate Facebook
+
+.row#statuses
+
+
