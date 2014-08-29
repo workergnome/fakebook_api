@@ -1,50 +1,77 @@
-### Todo:
+## Fakebook API
 
-* search for local event
-* join event
-* invite friend to event
-* send message
-* Need to use a template for the status bars
-* Need to add timestamps and timeouts to jobs
+This is a system designed to allow server-side access to Facebook using [Capybara](https://github.com/jnicklas/capybara) and [PhantomJS](http://phantomjs.org). It's still deeply experimental; it may or may not work at any point.
 
+Also, it's a *terrible idea*. It involves giving your Facebook password to random software to be transmitted over the internet and to be stored in plain text on the computer.  
 
-### Notes: 
+This should make you nervous.
 
-Unfriend is not confirming.
+Please notice that Facebook's [Terms of Service](https://www.facebook.com/legal/terms) forbid doing anything like this — there's a very good chance using this will result in Facebook banning your account.  Use a fake account.  Note that  Facebook's [Terms of Service](https://www.facebook.com/legal/terms) forbid fake accounts. 
 
-#### Done:
+Use at your own risk.
 
-* DONE - authenticate
-* DONE - add friend
-* DONE - unfriend
-* DONE - block
-* DONE - unblock
-* DONE - post on wall
-* DONE - poke
+## Installation: 
 
-### install:
+This requires [Redis](http://redis.io), [beanstalkd](http://kr.github.io/beanstalkd/), and [PhantomJS](http://phantomjs.org) to be installed on your system.
 
-    # install git + xcode command line tools
-    git
-    # install homebrew
-    ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
-    # install rvm
-    \curl -sSL https://get.rvm.io | bash -s stable
-
-    brew install beanstalkd
-    brew install redis
-    brew install phantomjs
-    sudo gem install bundle
-    git clone git@github.com:workergnome/fakebook_api.git
+    git clone https://github.com/workergnome/fakebook_api.git
     cd fakebook_api
     bundle install
+    
+Note that currently, the software assumes that you have a self-signed SSL certificate located at `~/.ssl/localhost.ssl`. 
+
+See the [Wiki Installation](https://github.com/workergnome/fakebook_api/wiki/Install-Instructions) for more detailed instructions.
 
 
-    # To create a self-signed cert:
-    echo "127.0.0.1 localhost.ssl" | sudo tee -a /etc/hosts
-    openssl req -new -newkey rsa:2048 -sha1 -days 365 -nodes -x509 -keyout server.key -out server.crt
-    mkdir ~/.ssl
-	mv server.* ~/.ssl
+## Usage Instructions:
 
-see <http://makandracards.com/makandra/15903-using-thin-for-development-with-ssl> for more info--
-see <http://makandracards.com/makandra/15901-howto-create-a-self-signed-certificate> for more info-- 
+For development purposes, the system is currently designed to use [Foreman](https://github.com/ddollar/foreman) to handle starting everything up.
+
+    foreman start
+
+Will initialize the application.
+
+Additionally, for debugging, the background job runner is commented out of the `Procfile`.  You can either comment it back in or you can, in a second terminal:
+
+    bundle exec ruby lib/background_task.rb
+
+If you need additional debug information, you can either `export DEBUG=1` or create a `.env` file in the root directory.  This will set **PhantomJS** into verbose mode.
+
+Once the application is running, go to <https://localhost:3000/>.  You'll see a form that will allow you do test the service.
+
+Additionally, you can post data to the following endpoints:
+
+* <https://localhost:3000/poke>
+* <https://localhost:3000/post>
+* <https://localhost:3000/friend>
+* <https://localhost:3000/unfriend>
+* <https://localhost:3000/block>
+* <https://localhost:3000/unblock>
+
+You will need to provide the following form fields:
+
+
+    email:    "your@emailaddress.com"
+    password: "yourFacebookPassword"
+    message:  "An optional message for posting on the wall of your friend"
+    id:       "your_friends_fb_id"
+
+Once you submit a request, you will receive a ticket in the form of a UUID:  something like `5aab4905-0fe9-4352-a0e6-0d93d7d0f760`
+
+You can check on the status of the request by going to <https://localhost:3000/pretty_status/5aab4905-0fe9-4352-a0e6-0d93d7d0f760> (or <https://localhost:3000/status/5aab4905-0fe9-4352-a0e6-0d93d7d0f760> for JSON)
+
+It usually takes about 30 seconds for a request to be completed, and they will queue up in order.  Theoretically, you can run multiple workers to handle multiple requests in order—that hasn't been tested yet.
+
+A log file will be created in the `/logs` directory with the UUID as a filename.  This will show the status of the request.  If it fails for any reason, it will create a screenshot of the webpage in the `/screenshots` directory of the page at the point where it failed.
+
+#### A Brief Digression.
+
+Facebook has some of the worst CSS I've ever had the opportunity to scrape.  It's obviously highly generated, inconsistent, it uses multiple identical IDs, and it's generally obnoxious.   
+
+It's almost like they don't *want*  anyone to scrape and automate their site. 
+
+
+----
+
+This is under active development—things will change, things will break, etc.  I'd say that you shouldn't use this in production, but there are basically no places where this would be useful in production, and if you can think of one, **stop thinking about that.**
+
