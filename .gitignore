@@ -1,3 +1,4 @@
+.DS_Store
 .sass-cache
 app/public/css/*
 !app/public/css/lib

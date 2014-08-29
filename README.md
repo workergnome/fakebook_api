@@ -33,6 +33,7 @@ Unfriend is not confirming.
 
     brew install beanstalkd
     brew install redis
+    brew install phantomjs
     sudo gem install bundle
     git clone git@github.com:workergnome/fakebook_api.git
     cd fakebook_api
