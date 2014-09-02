@@ -70,7 +70,7 @@ module FFB
       return JSON.generate data     
     end
 
-    ["/friend","/poke", "/post"].each do |path|
+    ["/friend", "/unfriend", "/poke", "/post", "/join_event", "/block", "/unblock"].each do |path|
       post path do
         id = SecureRandom.uuid
 
@@ -81,7 +81,9 @@ module FFB
           :ticket => id, 
           :message => params[:message],
           :email => params[:email],
-          :password => params[:password]
+          :password => params[:password],
+          :friend_name => params[:friend_name],
+          :headless => (params[:headless].nil?  ? true : false)
         }
 
         settings.cache.set(id, JSON.generate(obj))

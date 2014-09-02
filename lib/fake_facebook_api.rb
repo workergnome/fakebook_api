@@ -108,6 +108,60 @@ class FakeFacebookApi
     end
   end
 
+
+#------------------------------------------------------------------#
+
+  def join_event(data)
+    facebook_id = data["id"]
+    login
+    begin
+      @session.visit "https://www.facebook.com/events/upcoming"
+      @session.within("#pagelet_suggested_events .fbEventsSuggestionItem", match: :first) do
+        begin
+          @session.click_link_or_button("Join")
+        rescue
+          raise FacebookError, "Cannot find a Join button."
+        end
+        @session.click_link_or_button("Invite Friends")
+      end
+      @session.within(".profileBrowserDialog") do
+        searchbox = @session.find(".inputtext")
+        searchbox.set data["friend_name"]
+        begin
+          if @session.has_css?(".listSection")
+            @session.within(".listSection") do
+              if @session.has_text?(data["friend_name"])
+                begin
+                  el = @session.find(".checkbox", :match => :first)
+                  el.click
+                  puts "checked!"
+                  screenshot("friend_shot_3")
+
+                rescue
+                  raise FacebookError, "Checking the box isn't working"
+                end
+              else
+               raise FacebookError, "Cannot find that specific friend's name"
+             end
+            end
+          end
+        rescue
+          raise FacebookError, "Cannot find that friend in a list"
+        end
+      end
+      begin
+        @session.within(".uiOverlayFooterButtons") do
+          @session.find(".layerConfirm").trigger("click")
+        end
+      rescue
+        raise FacebookError, "Problem clicking send"
+      end
+    rescue => e
+      raise FacebookError, "Generic event joining error: " + e.message
+    end
+    @session.has_text? "Your friend will be invited"
+  end
+
 #------------------------------------------------------------------#
 
   def block(data)
@@ -265,8 +319,8 @@ class FakeFacebookApi
 
   #----------------------------------------------------------------#
   # Take a screenshot, name it with the ticket number.
-  def screenshot
-    fn = @ticket || SecureRandom.uuid.to_s
+  def screenshot(filename=nil)
+    fn = filename || @ticket || SecureRandom.uuid.to_s
     f = "screenshots/#{fn}.png"
     @session.save_screenshot(f)
     puts "Saved #{f}:"

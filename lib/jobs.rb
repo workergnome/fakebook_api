@@ -16,7 +16,7 @@ class GenericJob
         $stdout.reopen("logs/#{data["ticket"]}.txt", "w")
         $stdout.sync = true
 
-        go_headless = true
+        go_headless = data["headless"].nil? ? true : data["headless"]
         api = FakeFacebookApi.new(data['email'],data["password"],data["ticket"], go_headless)
         data["password"] = "DELETED"
         cache.set(uuid,JSON.generate(data))
