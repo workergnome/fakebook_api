@@ -47,14 +47,16 @@ Additionally, you can post data to the following endpoints:
 * <https://localhost:3000/unfriend>
 * <https://localhost:3000/block>
 * <https://localhost:3000/unblock>
+* <https://localhost:3000/join_event>
 
 You will need to provide the following form fields:
 
 
-    email:    "your@emailaddress.com"
-    password: "yourFacebookPassword"
-    message:  "An optional message for posting on the wall of your friend"
-    id:       "your_friends_fb_id"
+    email:        "your@emailaddress.com"
+    password:     "yourFacebookPassword"
+    message:      "An optional message for posting on the wall of your friend"
+    id:           "your_friends_fb_id"
+    friend_name:  "Friend's Name"  # Only needed for /join_event, but will create better debug messages if it exists
 
 Once you submit a request, you will receive a ticket in the form of a UUID:  something like `5aab4905-0fe9-4352-a0e6-0d93d7d0f760`
 
