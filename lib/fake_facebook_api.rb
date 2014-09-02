@@ -115,6 +115,8 @@ class FakeFacebookApi
     facebook_id = data["id"]
     login
     begin
+      puts "Finding an event..."
+
       @session.visit "https://www.facebook.com/events/upcoming"
       @session.within("#pagelet_suggested_events .fbEventsSuggestionItem", match: :first) do
         begin
@@ -122,6 +124,8 @@ class FakeFacebookApi
         rescue
           raise FacebookError, "Cannot find a Join button."
         end
+        puts "   ... found!"
+        puts "Inviting friends..."
         @session.click_link_or_button("Invite Friends")
       end
       @session.within(".profileBrowserDialog") do
@@ -159,7 +163,14 @@ class FakeFacebookApi
     rescue => e
       raise FacebookError, "Generic event joining error: " + e.message
     end
-    @session.has_text? "Your friend will be invited"
+    val = @session.has_text? "Your friend will be invited"
+    if val
+      puts "   ....invited!"
+      return true
+    else
+      raise FacebookError, "Did not get confirmation of invitation"
+    end
+    return false
   end
 
 #------------------------------------------------------------------#
