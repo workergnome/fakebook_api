@@ -1,12 +1,12 @@
 <div class='col-md-4 status_row'  id='{{ticket}}' data-status='{{status}}'>
  <div class='status {{statusClass status}}'>
-  <a href='/pretty_status/{{ticket}}'>
-     <span class='uuid'>{{ticket}}</span>
+  <a target="_blank" href='/pretty_status/{{ticket}}'>
+     <span class='uuid'>{{id}} – {{method}}</span>
       {{#if processing}} 
         <span class="status_message">: processing</span>
       {{/if}}
       {{#if error}}
-        : <a href="/screenshot/{{ticket}}">screenshot</a>
+        : error - <a  target="_blank" href="/screenshot/{{ticket}}">see screenshot</a>
       {{/if}}
      </a>
   </div>
