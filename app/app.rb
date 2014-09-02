@@ -33,15 +33,29 @@ module FFB
     end
 
     get '/pretty_status/:uuid' do
-      uuid = params[:uuid]
-      data = settings.cache.get(uuid)
-      if data.nil?
-        data = {:method => nil, :id => nil, :ticket => uuid, :status => -1}
+      if params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+        uuid = params[:uuid]
+        data = settings.cache.get(uuid)
+        if data.nil?
+          data = {:method => nil, :id => nil, :ticket => uuid, :status => -1}
+        else 
+          data = JSON.parse data
+        end
+        data["password"] = "************"
+        haml :status, :locals => {:ticket => data}
       else 
-        data = JSON.parse data
+        "Invalid UUID"
       end
-      data["password"] = "************"
-      haml :status, :locals => {:ticket => data}
+    end
+
+    get '/screenshot/:uuid' do
+      if params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+        content_type 'image/png'
+        File.read(File.join('screenshots', "#{params[:uuid]}.png"))
+      else 
+        "Invalid UUID"
+      end
+
     end
 
     get '/status/:uuid' do

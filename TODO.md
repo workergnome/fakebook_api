@@ -13,6 +13,7 @@
 * Need to add timestamps and timeouts to jobs
 * Screenshots should be attached to failed jobs.
 * there should be a additional status for things that failed because facebook said no.
+* link to the beanstalkd_view
 
 ## Notes: 
 

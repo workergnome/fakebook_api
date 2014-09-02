@@ -1,3 +1,13 @@
+Handlebars.registerHelper "statusClass", (status) ->
+  if status == 0
+    "bg-primary"
+  else if status == 1
+    "bg-success"
+  else if status == -1
+    "bg-danger"
+  else
+    ""
+
 #----------------------------------------------#
     
 submitToFacebook = (e) ->
@@ -13,22 +23,15 @@ submitToFacebook = (e) ->
 #----------------------------------------------#
 
 showStatus = (ticketData) ->
-  status = ticketData.status
-  id = ticketData.ticket
-  line = $("##{id}")
-  text = "#{id}: #{if status == 0 then 'processing' else 'complete'}"
+  ticketData.error = ticketData.status == -1
+  ticketData.processing = ticketData.status == 0
+  ticketData.complete = ticketData.status == 1
+  html = HandlebarsTemplates.status(ticketData)
+  line = $("##{ticketData.ticket}")
   if line.length
-    line.data("status",status).text(text)
+    line.replaceWith(html)
   else
-    html = "<div class='row status' id='#{id}' data-status='#{status}'><a href='/pretty_status/#{id}'>#{text}</a></div>"
     line = $("#statuses").append(html)  
-
-  if status == 0
-    line.addClass("bg-primary")
-  else if status == 1
-    line.removeClass("bg-primary").addClass("bg-success")
-  else if status == -1
-    line.removeClass("bg-primary").addClass("bg-danger")
 
 #----------------------------------------------#
 
@@ -53,7 +56,7 @@ checkFields = (e) ->
 #----------------------------------------------#
 
 updateStatus = () ->
-  $('.status').each () ->
+  $('.status_row').each () ->
     $item = $(this)
     if $item.data("status") == 0
       promise = $.getJSON("/status/#{$item.attr('id')}")

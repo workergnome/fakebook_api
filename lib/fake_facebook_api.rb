@@ -5,42 +5,27 @@ require 'dotenv'
 Dotenv.load
 
 #------------------------------------------------------------------#
+#  Generic error class—used so that facebook errors can be caught
+#  and screenshots taken.
 #------------------------------------------------------------------#
 class FacebookError < StandardError
 end
+
+
 #------------------------------------------------------------------#
+#  Actual Facebook API Class.    
+# 
 #------------------------------------------------------------------#
 
 class FakeFacebookApi
   attr_accessor :email, :password, :ticket
 
-  def screenshot
-    fn = @ticket || SecureRandom.uuid.to_s
-    f = "screenshots/#{fn}.png"
-    @session.save_screenshot(f)
-    puts "Saved #{f}:"
-    return f
-  end
-
-#------------------------------------------------------------------#
-
-  def facebook(&block)
-    success = nil
-    begin
-      login
-      success = instance_eval &block
-      logout
-    rescue FacebookError => e
-      filename = screenshot
-      puts "Error: #{e.message}. See above for more info" 
-      success = false
-    end
-    success
-  end
-
-#------------------------------------------------------------------#
-
-  def initialize(email, password, ticket = nil, headless = false)
+  #----------------------------------------------------------------#
+  # For initialization, pass in the email, password, and ticket.
+  # Additionally, if you pass in headless=true, it will run using
+  # Selenium instead of poltergeist, so you can see the behaviour.
+ 
+  def initialize(email, password, ticket, headless = false)
     @email = email
     @password = password
     @ticket = ticket
@@ -56,10 +41,34 @@ class FakeFacebookApi
       @session = Capybara::Session.new(:selenium)
     end
     @logged_in = false
-    @attempting_emergency_logout = false
   end
 
-#------------------------------------------------------------------#
+
+  #----------------------------------------------------------------#
+  # Block wrapper for the API DSL- uses #instance_eval to run the 
+  # given block within the context of this class.
+  # In a perfect world, the class containing the DSL and the 
+  # class executing Facebook elements would be two separate classes
+  # but we haven't gotten there, yet.
+
+   def facebook(&block)
+    success = nil
+    begin
+      login
+      success = instance_eval &block
+      logout
+    rescue FacebookError => e
+      filename = screenshot
+      puts "Error: #{e.message}. See above for more info" 
+      success = false
+    end
+    success
+  end
+
+
+#----------------------------------------------------------------#
+#  API Methods
+#----------------------------------------------------------------#
 
   def login
     if @logged_in
@@ -135,6 +144,36 @@ class FakeFacebookApi
     @session.click_on("Confirm")
   end
 
+
+#------------------------------------------------------------------#
+
+  def friend(data)
+    facebook_id = data["id"]
+
+    login
+    @session.visit "http://www.facebook.com/#{facebook_id}"
+    begin 
+      @session.within('.FriendButton', match: :first) do
+        if @session.has_text? "Friends"
+          puts "already friends!"
+          return false
+        elsif @session.has_button? "Add Friend"
+          @session.click_link_or_button("Add Friend")
+          if @session.has_no_button? "Friend Request Sent"
+            raise FacebookError, "Somehow your friend request for #{facebook_id} failed."
+          else 
+            return true
+          end
+        else
+          raise FacebookError, "You screwed up trying to find a friend request button."
+        end
+      end
+    rescue Capybara::ElementNotFound
+      raise FacebookError "Cannot friend #{facebook_id}."
+    end
+  end
+
+  
 #------------------------------------------------------------------#
 
   def unfriend(data)
@@ -214,6 +253,27 @@ class FakeFacebookApi
     end
   end
 
+  
+
+
+
+
+  #----------------------------------------------------------------#
+  # Helper methods
+  #----------------------------------------------------------------#
+
+
+  #----------------------------------------------------------------#
+  # Take a screenshot, name it with the ticket number.
+  def screenshot
+    fn = @ticket || SecureRandom.uuid.to_s
+    f = "screenshots/#{fn}.png"
+    @session.save_screenshot(f)
+    puts "Saved #{f}:"
+    return f
+  end
+
+  #----------------------------------------------------------------#
   def open_friend_menu(facebook_id)
     begin
       @session.visit "http://www.facebook.com/#{facebook_id}"
@@ -236,31 +296,4 @@ class FakeFacebookApi
     end
   end
 
-#------------------------------------------------------------------#
-
-  def friend(data)
-    facebook_id = data["id"]
-
-    login
-    @session.visit "http://www.facebook.com/#{facebook_id}"
-    begin 
-      @session.within('.FriendButton', match: :first) do
-        if @session.has_text? "Friends"
-          puts "already friends!"
-          return false
-        elsif @session.has_button? "Add Friend"
-          @session.click_link_or_button("Add Friend")
-          if @session.has_no_button? "Friend Request Sent"
-            raise FacebookError, "Somehow your friend request for #{facebook_id} failed."
-          else 
-            return true
-          end
-        else
-          raise FacebookError, "You screwed up trying to find a friend request button."
-        end
-      end
-    rescue Capybara::ElementNotFound
-      raise FacebookError "Cannot friend #{facebook_id}."
-    end
-  end
 end

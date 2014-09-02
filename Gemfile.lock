@@ -96,8 +96,7 @@ GEM
       rack
     rack-protection (1.5.3)
       rack
-    rack-ssl (1.4.1)
-      rack
+    rack-ssl-enforcer (0.2.8)
     rack-test (0.6.2)
       rack (>= 1.0)
     rake (10.3.2)
@@ -163,7 +162,7 @@ DEPENDENCIES
   phantomjs
   poltergeist
   rack-livereload
-  rack-ssl
+  rack-ssl-enforcer
   rake
   rb-fsevent
   redis

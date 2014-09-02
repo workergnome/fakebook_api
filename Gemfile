@@ -19,7 +19,8 @@ gem "bootstrap-sass"
 gem "sinatra-handlebars"
 gem "rerun"
 gem "rb-fsevent"
-gem "rack-ssl"
+gem 'rack-ssl-enforcer'
+gem 'rack-livereload'
 gem 'dotenv'
 
 ## For background jobs
@@ -33,7 +34,6 @@ group :development do
   gem 'guard'
   gem 'guard-sass'
   gem 'guard-livereload'
-  gem "rack-livereload"
   gem 'guard-bundler', require: false
   gem 'guard-shell'
   gem 'guard-coffeescript'

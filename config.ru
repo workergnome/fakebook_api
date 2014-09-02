@@ -1,22 +1,17 @@
-require 'dotenv'
-Dotenv.load
-
-require_relative "app/app.rb"
-require 'rack-livereload'
-
-require 'rack/ssl'
-use Rack::SSL
-
 require 'bundler'
 Bundler.require
 
-use Rack::LiveReload, :min_delay => 500, :no_swf => true
+require_relative "app/app.rb"
 
 
-require 'beanstalkd_view'
-ENV['BEANSTALK_URL'] ||= 'beanstalk://localhost/'
-map "/beanstalk" do
-  run BeanstalkdView::Server
-end
+
+Dotenv.load
+use Rack::SslEnforcer, :http_port => 3000, :https_port => 3001, :before_redirect => Proc.new { |request|
+  #keep flash on redirect
+  puts "rredirect!"
+}
+
+# use Rack::LiveReload, :min_delay => 500, :no_swf => true
+
 
 run FFB::App
