@@ -16,6 +16,9 @@ class GenericJob
         # and rtrieve the data structure from Redis
         cache = Redis.new
         data = JSON.parse cache.get(uuid)
+
+        # Don't double-process things
+        return unless data["status"] == 0 
         
         # Redirect stdout to the log file
         orig_stdout = $stdout
@@ -33,7 +36,7 @@ class GenericJob
         # Call the method passed in by the string.  
         # For security, check it against the whitelist of allowable methods
         method = data["method"]
-        if FakeFacebookApi.allowable_routes.include? "/#{method}"
+        if FakeFacebookApi.allowable_routes.include? "/#{method}" 
             success = api.facebook do
               puts "Initiating #{method}"
               eval "#{method}(data)"

@@ -1,13 +1,24 @@
-<div class='col-md-4 status_row'  id='{{ticket}}' data-status='{{status}}'>
- <div class='status {{statusClass status}}'>
-  <a target="_blank" href='/pretty_status/{{ticket}}'>
-     <span class='uuid'>{{id}} – {{method}}</span>
-      {{#if processing}} 
-        <span class="status_message">: processing</span>
-      {{/if}}
-      {{#if error}}
-        : error - <a  target="_blank" href="/screenshot/{{ticket}}">see screenshot</a>
-      {{/if}}
-     </a>
+<div class='col-md-12 status_row'  id='{{ticket}}' data-status='{{status}}'>
+  <div class='status {{statusClass status}}'>
+    <h4>
+      <a target="_blank" href='/pretty_status/{{ticket}}'>{{id}}</a>
+    </h4>
+    <ul>
+      <li> <strong> Ticket #: </strong>{{ticket}} </li>
+      <li> <strong> Method: </strong>{{method}} </li>
+      <li class="status_message"><strong>Status: </strong>
+        {{#if processing}} 
+          : processing
+        {{/if}}
+        {{#if complete}}
+          : successful 
+        {{/if}}
+        {{#if error}}
+          : error - <a  target="_blank" href="/screenshot/{{ticket}}">see screenshot</a>
+        {{/if}}
+      </li>
+      <li><strong>Submitted at: </strong>{{start_time}}</li>
+      <li><strong>Elapsed Time: </strong>{{wait_time}}</li>
+    </ul>
   </div>
 </div>

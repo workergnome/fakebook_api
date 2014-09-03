@@ -34,10 +34,14 @@
         %button#do_fb.btn.btn-danger{type: "submit"} Manipulate Facebook
 
 .row
-  .col-md-4.well.col-md-offset-1
-    = "Pending: #{pending}"
-  .col-md-4.well.col-md-offset-2
-    = "Completed: #{completed}"
-.row#statuses
+  .col-md-6
+    %h4= "Pending: #{pending}"
+  .col-md-6
+    %h4= "Completed: #{completed}"
+.row
+  .col-md-6
+    .row#statuses
+  .col-md-6
+    .row#completed
 
 

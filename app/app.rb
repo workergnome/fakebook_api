@@ -73,6 +73,21 @@ module FFB
       end
     end
 
+    get "/status" do
+      pending = settings.cache.zrevrange("pending",0,-1).collect do |uuid|
+        val = JSON.parse settings.cache.get(uuid)
+        val.delete "password"
+        val
+      end
+      complete = settings.cache.zrevrange("completed",0,10).collect do |uuid|
+        val =JSON.parse settings.cache.get(uuid)
+        val.delete "password"
+        val
+      end
+      obj = {complete: complete, pending: pending}
+      json obj
+    end
+
     get '/status/:uuid' do
       uuid = params[:uuid]
       data = settings.cache.get(uuid)

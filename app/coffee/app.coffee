@@ -16,22 +16,29 @@ submitToFacebook = (e) ->
   url = "/#{$('#fb_action').val().toLowerCase()}"
   console.log url, obj
   promise = $.post url, obj 
-  promise.done (e) ->
-    data = JSON.parse(e)
-    showStatus data
+
 
 #----------------------------------------------#
 
-showStatus = (ticketData) ->
-  ticketData.error = ticketData.status == -1
-  ticketData.processing = ticketData.status == 0
-  ticketData.complete = ticketData.status == 1
-  html = HandlebarsTemplates.status(ticketData)
-  line = $("##{ticketData.ticket}")
-  if line.length
-    line.replaceWith(html)
-  else
-    line = $("#statuses").append(html)  
+showStatus = (status) ->
+  $("#statuses").html("")
+  $("#completed").html("")
+  for ticketData in status.pending
+    ticketData.error = ticketData.status == -1
+    ticketData.processing = ticketData.status == 0
+    ticketData.complete = ticketData.status == 1
+    ticketData.wait_time = "#{Math.round((Date.now()/1000 - ticketData.start_time))} seconds"
+    ticketData.start_time = new Date(ticketData.start_time *1000).toString() 
+    html = HandlebarsTemplates.status(ticketData)
+    $("#statuses").append(html)  
+  for ticketData in status.complete
+    ticketData.error = ticketData.status == -1
+    ticketData.processing = ticketData.status == 0
+    ticketData.complete = ticketData.status == 1
+    ticketData.wait_time = "#{Math.round(ticketData.end_time - ticketData.start_time)} seconds"
+    ticketData.start_time = new Date(ticketData.start_time *1000).toString()
+    html = HandlebarsTemplates.status(ticketData)
+    $("#completed").append(html)  
 
 #----------------------------------------------#
 
@@ -56,12 +63,9 @@ checkFields = (e) ->
 #----------------------------------------------#
 
 updateStatus = () ->
-  $('.status_row').each () ->
-    $item = $(this)
-    if $item.data("status") == 0
-      promise = $.getJSON("/status/#{$item.attr('id')}")
-      promise.done(showStatus)
-  setTimeout(updateStatus,5000)
+  promise = $.getJSON("/status")
+  promise.done(showStatus)
+  setTimeout(updateStatus,900)
 
 #----------------------------------------------#
 
