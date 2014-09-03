@@ -83,10 +83,13 @@ module FFB
           :email => params[:email],
           :password => params[:password],
           :friend_name => params[:friend_name],
-          :headless => (params[:headless].nil?  ? true : false)
+          :headless => (params[:headless].nil?  ? true : false),
+          :start_time => Time.now.to_i,
+          :end_time => nil
         }
 
         settings.cache.set(id, JSON.generate(obj))
+        settings.cache.zadd("pending",obj[:start_time],id)
         Backburner.enqueue GenericJob, id
         redirect to("/status/#{id}")
       end
