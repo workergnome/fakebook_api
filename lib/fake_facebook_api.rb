@@ -1,6 +1,8 @@
 require 'capybara'
 require 'capybara/poltergeist'
 require 'securerandom'
+
+# Use a .env file to pull environment vars
 require 'dotenv'
 Dotenv.load
 
@@ -19,6 +21,10 @@ end
 
 class FakeFacebookApi
   attr_accessor :email, :password, :ticket
+  def FakeFacebookApi.allowable_routes
+    ["/friend", "/unfriend", "/poke", "/post", "/join_event", "/block", "/unblock"]
+  end
+
 
   #----------------------------------------------------------------#
   # For initialization, pass in the email, password, and ticket.

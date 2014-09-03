@@ -31,14 +31,17 @@ class GenericJob
         cache.set(uuid,JSON.generate(data))
         
         # Call the method passed in by the string.  
-        # (Note that technically) this could evaluate any method.  
-        # TODO: This is a security problem, and should absolutely be whitelisted for production
+        # For security, check it against the whitelist of allowable methods
         method = data["method"]
-        success = api.facebook do
-          puts "Initiating #{method}"
-          eval "#{method}(data)"
+        if FakeFacebookApi.allowable_routes.include? "/#{method}"
+            success = api.facebook do
+              puts "Initiating #{method}"
+              eval "#{method}(data)"
+            end
+        else
+            puts "Invalid method: #{method}"
+            success = false
         end
-
         # On completion, update the status, add an endtime, and save to redis.
         data["status"] = success ? 1 : -1
         end_time = data["end_time"] = Time.now.to_i

@@ -9,7 +9,6 @@
 * Need to add timestamps and timeouts to jobs
 * there should be a additional status for things that failed because facebook said no.
 * link to the beanstalkd_view
-* Whitelist allowable EVALs in `jobs.rb`
 
 ## Notes: 
 

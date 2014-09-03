@@ -8,6 +8,7 @@ require 'securerandom'
 require 'redis'
 require "backburner"
 require_relative '../lib/jobs'
+require_relative '../lib/fake_facebook_api'
 
 $stdout.sync = true # for foreman logging
 Backburner.configure do |config|
@@ -28,34 +29,48 @@ module FFB
       set :cache, Redis.new
     end
 
+    helpers do
+      def valid_uuid?(uuid)
+        if  (params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)).nil?
+          halt 400, "Invalid UUID"
+        else
+          true
+        end
+      end
+    end
+
     get '/' do
-      haml :index
+      obj = {}
+      obj[:pending] = settings.cache.zcount("pending","-inf","+inf")
+      obj[:completed] = settings.cache.zcount("completed","-inf","+inf")
+      haml :index, :locals => obj
     end
 
     get '/pretty_status/:uuid' do
-      if params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
-        uuid = params[:uuid]
+      #security check — we're evaluating hashes directly from web input.
+      uuid = params[:uuid]
+      if valid_uuid?(uuid)
         data = settings.cache.get(uuid)
+
+        # Handle missing data
         if data.nil?
           data = {:method => nil, :id => nil, :ticket => uuid, :status => -1}
         else 
           data = JSON.parse data
         end
+        
+        # Hide password
         data["password"] = "************"
         haml :status, :locals => {:ticket => data}
-      else 
-        "Invalid UUID"
       end
     end
 
     get '/screenshot/:uuid' do
-      if params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+      #security check — we're evaluating filenames directly from web input.
+      if valid_uuid?(params[:uuid])
         content_type 'image/png'
         File.read(File.join('screenshots', "#{params[:uuid]}.png"))
-      else 
-        "Invalid UUID"
       end
-
     end
 
     get '/status/:uuid' do
@@ -70,7 +85,7 @@ module FFB
       return JSON.generate data     
     end
 
-    ["/friend", "/unfriend", "/poke", "/post", "/join_event", "/block", "/unblock"].each do |path|
+    FakeFacebookApi::allowable_routes.each do |path|
       post path do
         id = SecureRandom.uuid
 
