@@ -44,13 +44,22 @@ showStatus = (status) ->
 
 checkFields = (e) ->
   valid = true
-  
-  if $('#fb_action').val() == "Post"
+  method = $('#fb_action').val()
+  console.log("method")
+  $("#friend").addClass("required")
+  $('#friend_group').removeClass("hidden")
+  $('#message_group').addClass("hidden")
+  .removeClass("required")
+
+  if method == "Post"
     $('#message_group').removeClass("hidden")
     $("#message").addClass("required")
   else
-    $('#message_group').addClass("hidden")
-    $("#message").val('').removeClass("required")
+    $("#message").val('')
+  
+  if method == "Login"
+    $("#friend").removeClass("required")
+    $('#friend_group').addClass("hidden")
 
   $('.required').each () ->
     if $(this).val().length == 0 

@@ -12,7 +12,7 @@
         .col-md-4
           %input#password.form-control.required{type: "password", name: "password", placeholder: "Enter your facebook password"}
         %span.help-block Don't do it.  This WILL hack your account.
-      .form-group.form-group-sm
+      .form-group.form-group-sm#friend_group
         %label.control-label.col-md-2{for: "friend"} Friend's ID:
         .col-md-4
           %input#friend.form-control.required{type: "text", name: "id", placeholder: "Enter Your friend's facebook acct."}
@@ -20,6 +20,7 @@
         %label.control-label.col-md-2{for: "fb_action"} Desired Action:
         .col-md-4
           %select.form-control#fb_action
+            %option Login
             %option Poke
             %option Post
             %option Friend

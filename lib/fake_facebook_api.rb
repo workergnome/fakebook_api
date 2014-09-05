@@ -22,7 +22,7 @@ end
 class FakeFacebookApi
   attr_accessor :email, :password, :ticket
   def FakeFacebookApi.allowable_routes
-    ["/friend", "/unfriend", "/poke", "/post", "/join_event", "/block", "/unblock"]
+    ["/friend", "/unfriend", "/poke", "/post", "/join_event", "/block", "/unblock", "/login"]
   end
 
 
@@ -76,7 +76,7 @@ class FakeFacebookApi
 #  API Methods
 #----------------------------------------------------------------#
 
-  def login
+  def login(_nothingness=nil)
     if @logged_in
       return true
     end

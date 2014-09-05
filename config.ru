@@ -11,6 +11,11 @@ use Rack::SslEnforcer, :http_port => 3000, :https_port => 3001, :before_redirect
   puts "rredirect!"
 }
 
+use Rack::Auth::Basic, "Restricted Area" do |username, password|
+  username == ENV["USERNAME"] and password == ENV["PASSWORD"]
+end
+
+
 # use Rack::LiveReload, :min_delay => 500, :no_swf => true
 
 
