@@ -67,6 +67,8 @@ class FakeFacebookApi
       filename = screenshot
       puts "Error: #{e.message}. See above for more info" 
       success = false
+    ensure
+      @session.driver.quit
     end
     success
   end
@@ -273,10 +275,14 @@ class FakeFacebookApi
     puts "Attempting to post '#{message}'..."
 
     @session.visit "http://www.facebook.com/#{facebook_id}"
-    @session.within('#u_0_1d') do
-      textarea = @session.find_field("Write something...")
-      textarea.click
-      textarea.native.send_keys(message)
+    begin
+      @session.within('#u_0_1d') do
+        textarea = @session.find_field("Write something...")
+        textarea.click
+        textarea.native.send_keys(message)
+      end
+    rescue
+      raise FacebookError, "Problems finding the text field."
     end
     begin
       buttn=@session.find("._ohf button._4jy0")
