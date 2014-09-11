@@ -10,3 +10,4 @@ app/public/js/*
 !/*/.gitkeep
 .env
 .rvmrc
+device_logs
