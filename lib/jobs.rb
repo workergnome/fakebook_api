@@ -30,8 +30,6 @@ class GenericJob
         api = FakeFacebookApi.new(data['email'],data["password"],data["ticket"], go_headless)
       
         # Delete the password in Redis now that we don't need it anymore
-        data["password"] = "DELETED"
-        cache.set(uuid,JSON.generate(data))
         
         # Call the method passed in by the string.  
         # For security, check it against the whitelist of allowable methods
@@ -46,6 +44,7 @@ class GenericJob
             success = false
         end
         # On completion, update the status, add an endtime, and save to redis.
+        data["password"] = "DELETED"
         data["status"] = success ? 1 : -1
         end_time = data["end_time"] = Time.now.to_i
         cache.set(uuid,JSON.generate(data))
