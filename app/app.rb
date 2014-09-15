@@ -51,8 +51,8 @@ module FFB
       # Sanity check—will only resolve on 40 digit hex string for ids
       # halt 400, "Invalid UDID" unless params[:id] && (params[:id] =~ /[0-9A-Z]/i) == 0 && params[:id].length == 36
 
-      FileUtils::mkdir_p "/Users/admin/Dropbox/device_logs/#{params[:id]}"
-      File.open("/Users/admin/Dropbox/device_logs/#{params[:id]}/master_#{params[:type]}.log", "a") { |file| file.write params[:data]+"\n" }.to_s
+      FileUtils::mkdir_p "#{ENV[:LOG_LOCATION]}#{params[:id]}"
+      File.open("#{ENV[:LOG_LOCATION]}#{params[:id]}/master_#{params[:type]}.log", "a") { |file| file.write params[:data]+"\n" }.to_s
     end
     
     get '/pretty_status/:uuid' do
