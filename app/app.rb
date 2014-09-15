@@ -32,11 +32,11 @@ module FFB
 
     helpers do
       def valid_uuid?(uuid)
-        if  (params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)).nil?
-          halt 400, "Invalid UUID"
-        else
-          true
-        end
+        # if  (params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)).nil?
+        #  halt 400, "Invalid UUID"
+        #else
+        # true
+        # end
       end
     end
 
@@ -49,7 +49,7 @@ module FFB
 
     post '/device_log' do
       # Sanity check—will only resolve on 40 digit hex string for ids
-      halt 400, "Invalid UDID" unless params[:id] && (params[:id] =~ /[0-9A-Z]/i) == 0 && params[:id].length == 36
+      # halt 400, "Invalid UDID" unless params[:id] && (params[:id] =~ /[0-9A-Z]/i) == 0 && params[:id].length == 36
 
       FileUtils::mkdir_p "/Users/admin/Dropbox/device_logs/#{params[:id]}"
       File.open("/Users/admin/Dropbox/device_logs/#{params[:id]}/master_#{params[:type]}.log", "a") { |file| file.write params[:data]+"\n" }.to_s
