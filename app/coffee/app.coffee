@@ -78,9 +78,15 @@ updateStatus = () ->
 
 #----------------------------------------------#
 
+clearQueue = () ->
+  console.log "clearing..."
+  $.get "/clear_jobs", (data) ->
+    console.log data
+
 $ ->
   checkFields()
   $(document).on "click", "#do_fb", submitToFacebook
   $(document).on "keyup", ".required", checkFields
+  $(document).on "click", "#clear", clearQueue
   $('#fb_action').on "change", checkFields
   updateStatus()

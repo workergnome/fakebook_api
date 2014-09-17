@@ -47,6 +47,11 @@ module FFB
       haml :index, :locals => obj
     end
 
+    get '/clear_jobs' do
+      amount_cleared = settings.cache.zremrangebyscore("pending","-inf","+inf")
+      "Cleared #{amount_cleared}"
+    end
+
     post '/device_log' do
       # Sanity check—will only resolve on 40 digit hex string for ids
       # halt 400, "Invalid UDID" unless params[:id] && (params[:id] =~ /[0-9A-Z]/i) == 0 && params[:id].length == 36
