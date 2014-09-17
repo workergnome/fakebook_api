@@ -49,7 +49,15 @@ module FFB
 
     get '/clear_jobs' do
       amount_cleared = settings.cache.zremrangebyscore("pending","-inf","+inf")
-      "Cleared #{amount_cleared}"
+
+      deleted = 0
+      current_tube = Backburner::Worker.connection.tubes['fakebook.']
+      while current_tube.peek(:ready)
+         job = current_tube.reserve
+         job.delete
+         deleted +=1
+      end
+      "Cleared #{amount_cleared}, deleted #{deleted}"
     end
 
     post '/device_log' do
