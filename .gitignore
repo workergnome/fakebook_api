@@ -11,3 +11,4 @@ app/public/js/*
 .env
 .rvmrc
 device_logs
+background.god

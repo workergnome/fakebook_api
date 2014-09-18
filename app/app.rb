@@ -32,11 +32,11 @@ module FFB
 
     helpers do
       def valid_uuid?(uuid)
-        # if  (params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)).nil?
-        #  halt 400, "Invalid UUID"
-        #else
-        # true
-        # end
+        if  (params[:uuid] =~ (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)).nil?
+         halt 400, "Invalid UUID"
+        else
+          true
+        end
       end
     end
 
@@ -92,6 +92,8 @@ module FFB
       if valid_uuid?(params[:uuid])
         content_type 'image/png'
         File.read(File.join('screenshots', "#{params[:uuid]}.png"))
+      else
+        "Invalid UUID."
       end
     end
 

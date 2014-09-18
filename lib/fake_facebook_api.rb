@@ -301,10 +301,14 @@ class FakeFacebookApi
         end
       end
     rescue
-      if @session.find("._1yv").has_text? "This status update appears to be blank."
-        raise FacebookError, "Somehow, your status was blank."
-      else
-         raise FacebookError, "Couldn't find the lastCapsule."
+      begin
+        if @session.find("._1yv").has_text? "This status update appears to be blank."
+          raise FacebookError, "Somehow, your status was blank."
+        else
+           raise FacebookError, "Couldn't find the lastCapsule."
+        end
+      rescue
+        raise FacebookError, "Something went wrong with finding the status message."
       end
     end
     puts "   ... posted."
