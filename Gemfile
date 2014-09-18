@@ -28,6 +28,7 @@ gem 'backburner'
 gem "redis"
 gem "rake"
 gem "beanstalkd_view"
+gem "god"
 
 group :development do
   gem "foreman"
