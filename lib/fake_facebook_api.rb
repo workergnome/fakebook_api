@@ -67,7 +67,7 @@ class FakeFacebookApi
       filename = screenshot
       puts "Error: #{e.message}. See above for more info" 
       success = false
-    rescue 
+    rescue => e
       filename = screenshot
       puts "Uncaught Error: #{e.message}." 
       success = false
